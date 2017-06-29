@@ -10,8 +10,8 @@ import sys
 def send_newmail(location):
 	msg = MIMEMultipart()
 	msg['Subject'] = 'New leads for ' + location
-	msg['From'] = 'DELETED'
-	msg['Reply-to'] = 'DELETED'
+	msg['From'] = ''
+	msg['Reply-to'] = ''
 
 	filename = "out.csv"
 	f = open(filename)
@@ -21,8 +21,8 @@ def send_newmail(location):
 	mailer = smtplib.SMTP("smtp.gmail.com:587")
 	mailer.ehlo()
 	mailer.starttls()
-	mailer.login("DELETED", "DELETED")
-	mailer.sendmail(msg['From'], "DELETED", msg.as_string())
+	mailer.login("", "")
+	mailer.sendmail(msg['From'], "", msg.as_string())
 	mailer.quit()
 
 
@@ -30,7 +30,7 @@ def send_newmail(location):
 
 def check_newmail():
 	mail = imaplib.IMAP4_SSL('imap.gmail.com')
-	mail.login('DELETED', 'DELETED')
+	mail.login('', '')
 	mail.list()
 	# Out: list of "folders" aka labels in gmail.
 	mail.select("inbox") # connect to inbo 
@@ -49,8 +49,15 @@ def check_newmail():
 	parsed = email.message_from_bytes(raw_email)
 
 	payload = str(parsed.get_payload()[0])
-	city = payload[payload.index("City: ") + len("City: "):payload.index(",") + 4]
-	radius = payload[payload.index("Radius: ") + len("Radius: "):payload.index("#")]
-	keyword = payload[payload.index("Keyword: ") + len("Keyword: "):payload.index("$")]
 
+	city_index = payload.index("City: ")
+	radius_index = payload.index("Radius: ")
+	keyword_index = payload.index("Keyword: ")
+	city = payload[city_index + len("City: "):payload.index("#", city_index)]
+	radius = payload[radius_index + len("Radius: "):payload.index("#", radius_index)]
+	keyword = payload[keyword_index + len("Keyword: "):payload.index("#", keyword_index)]
+
+	print(city)
+	print(radius)
+	print(keyword)
 	return [city, radius, keyword]

@@ -2,7 +2,7 @@ import requests
 import json
 from email_helper import check_newmail, send_newmail
 import csv
-key = 'DELETED'
+key = ''
 
 manual_input = False
 
@@ -52,7 +52,6 @@ for place in data['results']:
 		new_entry += name + "&"
 	except KeyError:
 		print('No name given')
-
 	try:
 		phone = details_data['result']['formatted_phone_number']
 		print(phone)
