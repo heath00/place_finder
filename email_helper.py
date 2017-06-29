@@ -8,9 +8,9 @@ import smtplib
 import sys
 import important_info
 
-def send_newmail(location):
+def send_newmail(location, length):
 	msg = MIMEMultipart()
-	msg['Subject'] = 'New leads for ' + location
+	msg['Subject'] = str(length) + 'New potential leads for ' + location
 	msg['From'] = important_info.from_user
 	msg['Reply-to'] = important_info.from_user
 
