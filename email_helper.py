@@ -6,12 +6,13 @@ from email.mime.multipart import MIMEMultipart
 from smtplib import SMTP
 import smtplib
 import sys
+import important_info
 
 def send_newmail(location):
 	msg = MIMEMultipart()
 	msg['Subject'] = 'New leads for ' + location
-	msg['From'] = ''
-	msg['Reply-to'] = ''
+	msg['From'] = important_info.from_user
+	msg['Reply-to'] = important_info.from_user
 
 	filename = "out.csv"
 	f = open(filename)
@@ -21,8 +22,8 @@ def send_newmail(location):
 	mailer = smtplib.SMTP("smtp.gmail.com:587")
 	mailer.ehlo()
 	mailer.starttls()
-	mailer.login("", "")
-	mailer.sendmail(msg['From'], "", msg.as_string())
+	mailer.login(important_info.from_user, important_info.from_pass)
+	mailer.sendmail(msg['From'], important_info.to_user, msg.as_string())
 	mailer.quit()
 
 
@@ -30,7 +31,7 @@ def send_newmail(location):
 
 def check_newmail():
 	mail = imaplib.IMAP4_SSL('imap.gmail.com')
-	mail.login('', '')
+	mail.login(important_info.from_user, important_info.from_pass)
 	mail.list()
 	# Out: list of "folders" aka labels in gmail.
 	mail.select("inbox") # connect to inbo 
