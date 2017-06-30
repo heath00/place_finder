@@ -34,7 +34,10 @@ def check_newmail():
 	mail.login(important_info.from_user, important_info.from_pass)
 	mail.list()
 	# Out: list of "folders" aka labels in gmail.
-	mail.select("inbox") # connect to inbo 
+	mail.select("inbox") # connect to inbox 
+
+	if len(mail.search(None, 'UnSeen')[1][0].split())  == 0:
+		return None
 
 	result, data = mail.search(None, "ALL")
 	 
@@ -53,14 +56,28 @@ def check_newmail():
 
 	payload = str(parsed.get_payload()[0])
 
-	location_index = payload.index("Location: ")
+
+
 	radius_index = payload.index("Radius: ")
 	keyword_index = payload.index("Keyword: ")
-	location = payload[location_index + len("Location: "):payload.index("#", location_index)]
 	radius = payload[radius_index + len("Radius: "):payload.index("#", radius_index)]
 	keyword = payload[keyword_index + len("Keyword: "):payload.index("#", keyword_index)]
 
-	print(location)
-	print(radius)
-	print(keyword)
-	return [location, radius, keyword, sender]
+	if 'State: ' in payload:
+		state_index = payload.index("State: ")
+		state = payload[state_index + len("State: "):payload.index("#", state_index)]
+		
+		print(state)
+		print(radius)
+		print(keyword)
+
+		return [1, state, radius, keyword, sender]
+	else: 
+		location_index = payload.index("Location: ")
+		location = payload[location_index + len("Location: "):payload.index("#", location_index)]
+		
+		print(location)
+		print(radius)
+		print(keyword)
+
+		return [location.replace(' ', '+'), radius, keyword, sender]
