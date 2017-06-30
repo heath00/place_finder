@@ -8,9 +8,9 @@ import smtplib
 import sys
 import important_info
 
-def send_newmail(location, length):
+def send_newmail(location, length, sender):
 	msg = MIMEMultipart()
-	msg['Subject'] = str(length) + 'New potential leads for ' + location
+	msg['Subject'] = str(length) + ' potential leads for ' + location
 	msg['From'] = important_info.from_user
 	msg['Reply-to'] = important_info.from_user
 
@@ -23,7 +23,7 @@ def send_newmail(location, length):
 	mailer.ehlo()
 	mailer.starttls()
 	mailer.login(important_info.from_user, important_info.from_pass)
-	mailer.sendmail(msg['From'], important_info.to_user, msg.as_string())
+	mailer.sendmail(msg['From'], sender, msg.as_string())
 	mailer.quit()
 
 
@@ -49,16 +49,18 @@ def check_newmail():
 
 	parsed = email.message_from_bytes(raw_email)
 
+	sender = email.utils.parseaddr(parsed['From'])[1]
+
 	payload = str(parsed.get_payload()[0])
 
-	city_index = payload.index("City: ")
+	location_index = payload.index("Location: ")
 	radius_index = payload.index("Radius: ")
 	keyword_index = payload.index("Keyword: ")
-	city = payload[city_index + len("City: "):payload.index("#", city_index)]
+	location = payload[location_index + len("Location: "):payload.index("#", location_index)]
 	radius = payload[radius_index + len("Radius: "):payload.index("#", radius_index)]
 	keyword = payload[keyword_index + len("Keyword: "):payload.index("#", keyword_index)]
 
-	print(city)
+	print(location)
 	print(radius)
 	print(keyword)
-	return [city, radius, keyword]
+	return [location, radius, keyword, sender]

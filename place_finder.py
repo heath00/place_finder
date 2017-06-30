@@ -4,8 +4,12 @@ from email_helper import check_newmail, send_newmail
 import csv
 import important_info
 
+key = important_info.key
+separator = "*&*"
+
 def detail_finder(m_list, data, p_api, nby_search):
 	details_api = "https://maps.googleapis.com/maps/api/place/details/json?"
+
 
 	for place in data['results']:
 		this_placeid = place['place_id']
@@ -18,17 +22,17 @@ def detail_finder(m_list, data, p_api, nby_search):
 		try:
 			name = details_data['result']['name']
 			print(name)
-			new_entry += name + "&"
+			new_entry += name + separator
 		except KeyError:
 			print('No name given')
-			new_entry += "X&"
+			new_entry += "X" + separator
 		try:
 			phone = details_data['result']['formatted_phone_number']
 			print(phone)
-			new_entry += phone + "&"
+			new_entry += phone + separator
 		except KeyError:
 			print('No phone number given')
-			new_entry += 'X&'
+			new_entry += 'X' + separator
 		try:
 			site = details_data['result']['website']
 			print(site + "\n")
@@ -51,11 +55,11 @@ def detail_finder(m_list, data, p_api, nby_search):
 
 
 def main():
-	key = important_info.key
+
 	geocode_api = 'https://maps.googleapis.com/maps/api/geocode/json?address='
 	places_api = 'https://maps.googleapis.com/maps/api/place/radarsearch/json?'
 
-	manual_input = True
+	manual_input = False
 	nearby_search = 'nearby' in places_api
 
 	if manual_input:
@@ -70,6 +74,7 @@ def main():
 		desiredLocation = desiredLocation.replace(' ', '+')
 		radius = the_params[1]
 		keyword = the_params[2]
+		sender = the_params[3]
 
 
 	response = requests.get(geocode_api + desiredLocation + "&key=" + key)
@@ -90,15 +95,15 @@ def main():
 
 	ml_length = len(master_list)
 	print(master_list)
-	print("Length of list is: %d", ml_length)
+	print("Length of list is: ", ml_length)
 	with open('out.csv', 'w') as out:
 		writer = csv.writer(out)
 		for item in master_list:
-			writer.writerow(item.split("&"))
+			writer.writerow(item.split(separator))
 	if manual_input == True:
-		send_newmail(desiredLocation.replace('+', ' '), ml_length)
+		send_newmail(desiredLocation.replace('+', ' '), ml_length, sender)
 	else:
-		send_newmail(the_params[0], ml_length)
+		send_newmail(the_params[0], ml_length, sender)
 
 if __name__ == "__main__":
 	main()
