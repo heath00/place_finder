@@ -1,6 +1,8 @@
 import csv
 
-def get_5_cities(state):
+# opens cities database and returns all major cities for a given state
+# in a list
+def get_cities(state):
 	cities = []
 	with open('cities.csv', newline='') as csvfile:
 		read_file = csv.reader(csvfile)
