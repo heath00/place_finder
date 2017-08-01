@@ -65,13 +65,13 @@ def check_newmail():
 
 	if 'State: ' in payload:
 		state_index = payload.index("State: ")
-		state = payload[state_index + len("State: "):payload.index("#", state_index)]
+		states = payload[state_index + len("State: "):payload.index("#", state_index)].split()
 		
-		print(state)
+		print(states)
 		print(radius)
 		print(keyword)
 
-		return [1, state, radius, keyword, sender]
+		return [1, states, radius, keyword, sender]
 	else: 
 		location_index = payload.index("Location: ")
 		location = payload[location_index + len("Location: "):payload.index("#", location_index)]
